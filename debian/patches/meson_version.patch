@@ -1,0 +1,13 @@
+diff --git a/meson.build b/meson.build
+index fd7930b..5606625 100644
+--- a/meson.build
++++ b/meson.build
+@@ -6,7 +6,7 @@ project('iio-sensor-proxy', [ 'c' ],
+           'warning_level=1',
+           'c_std=c99',
+         ],
+-        meson_version: '>= 0.54.0')
++        meson_version: '>= 0.43.0')
+ 
+ cc = meson.get_compiler('c')
+ 

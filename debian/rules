@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+#
+
+# Enable Hardening
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+# This has to be exported to make some magic below work.
+export DH_OPTIONS
+
+%:
+	dh $@
+	
+override_dh_auto_configure:
+	dh_auto_configure -- -Dsystemdsystemunitdir=/usr/lib/systemd/system/ --libexecdir=/usr/sbin
+
