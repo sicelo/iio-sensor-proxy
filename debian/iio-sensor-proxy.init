@@ -1,0 +1,13 @@
+#!/sbin/openrc-run
+
+start() {
+        ebegin "Starting iio-sensor-deamon"
+        start-stop-daemon --start --background --exec /usr/sbin/iio-sensor-proxy
+        eend $?
+}
+
+stop() {
+        ebegin "Stopping iio-sensor-deamon"
+        start-stop-daemon --stop --quiet --exec /usr/sbin/iio-sensor-proxy
+        eend $?
+}

@@ -1,0 +1,41 @@
+Source: iio-sensor-proxy
+Section: utils
+Priority: optional
+Maintainer: Ritesh Raj Sarraf <rrs@debian.org>
+Build-Depends:
+	debhelper-compat (= 10),
+	libgudev-1.0-dev,
+	udev,
+	gtk-doc-tools (>= 1.0)
+Standards-Version: 3.5.0
+Rules-Requires-Root: no
+Homepage: https://gitlab.freedesktop.org/hadess/iio-sensor-proxy
+Vcs-Git: https://salsa.debian.org/debian/iio-sensor-proxy.git
+Vcs-Browser: https://salsa.debian.org/debian/iio-sensor-proxy/
+
+Package: iio-sensor-proxy
+Architecture: linux-any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Suggests: systemd
+Description: IIO sensors to D-Bus proxy
+ Industrial I/O subsystem is intended to provide support for devices
+ that in some sense are analog to digital or digital to analog convertors
+ .
+ Devices that fall into this category are:
+  * ADCs
+  * Accelerometers
+  * Gyros
+  * IMUs
+  * Capacitance to Digital Converters (CDCs)
+  * Pressure Sensors
+  * Color, Light and Proximity Sensors
+  * Temperature Sensors
+  * Magnetometers
+  * DACs
+  * DDS (Direct Digital Synthesis)
+  * PLLs (Phase Locked Loops)
+  * Variable/Programmable Gain Amplifiers (VGA, PGA)
+ .
+ Many ultrabooks ship with some of these devices. iio-sensor-proxy is
+ intended to serve as a proxy, providing access to these devices through
+ a D-Bus interface
