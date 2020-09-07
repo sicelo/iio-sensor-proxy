@@ -1,5 +1,10 @@
 #!/sbin/openrc-run
 
+depend() {
+        need eudev dbus
+        after kmod
+}
+
 start() {
         ebegin "Starting iio-sensor-deamon"
         start-stop-daemon --start --background --exec /usr/sbin/iio-sensor-proxy
