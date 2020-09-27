@@ -35,6 +35,7 @@ typedef enum {
 
 typedef enum {
   DRIVER_TYPE_COMPASS_IIO,
+  DRIVER_TYPE_COMPASS_IIO_UNCALIBRATED,
   DRIVER_TYPE_COMPASS_FAKE
 } DriverTypeCompass;
 
@@ -148,6 +149,7 @@ extern SensorDriver iio_poll_light;
 extern SensorDriver hwmon_light;
 extern SensorDriver iio_buffer_light;
 extern SensorDriver iio_buffer_compass;
+extern SensorDriver iio_poll_compass_uncalibrated;
 extern SensorDriver iio_poll_proximity;
 
 gboolean drv_check_udev_sensor_type (GUdevDevice *device, const gchar *match, const char *name);

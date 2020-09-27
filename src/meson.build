@@ -20,6 +20,7 @@ sources = [
   'drv-hwmon-light.c',
   'drv-iio-buffer-light.c',
   'drv-iio-buffer-compass.c',
+  'drv-iio-poll-compass-uncalibrated.c',
   'drv-iio-poll-proximity.c',
   'iio-buffer-utils.c',
   'accel-mount-matrix.c',
