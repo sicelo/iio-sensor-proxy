@@ -18,8 +18,8 @@ typedef struct {
 
 AccelVec3 *setup_mount_matrix (GUdevDevice *device);
 
-gboolean parse_mount_matrix (const char *mtx,
-                             AccelVec3  *vecs[3]);
+gboolean parse_mount_matrix (const char  *mtx,
+                             AccelVec3  **vecs);
 
 gboolean apply_mount_matrix (const AccelVec3  vecs[3],
                              AccelVec3       *accel);
