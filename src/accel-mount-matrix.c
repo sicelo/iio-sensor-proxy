@@ -87,12 +87,31 @@ setup_mount_matrix (GUdevDevice *device)
 	return ret;
 }
 
+static char **
+strsplit_num_tokens (const gchar *string,
+                     const gchar *delimiter,
+                     gint         num_tokens)
+{
+	g_auto(GStrv) elems = NULL;
+	guint i;
+
+	elems = g_strsplit (string, delimiter, num_tokens);
+	if (elems == NULL)
+		return NULL;
+	for (i = 0; i < num_tokens; i++) {
+		if (elems[i] == NULL)
+			return NULL;
+	}
+	return g_steal_pointer (&elems);
+}
+
 gboolean
 parse_mount_matrix (const char  *mtx,
 		    AccelVec3  **vecs)
 {
 	AccelVec3 *ret;
 	guint i;
+	g_auto(GStrv) axis = NULL;
 
 	g_return_val_if_fail (vecs != NULL, FALSE);
 
@@ -108,13 +127,26 @@ parse_mount_matrix (const char  *mtx,
 	}
 
 	ret = g_new0 (AccelVec3, 3);
-	if (sscanf (mtx, "%f, %f, %f; %f, %f, %f; %f, %f, %f",
-		    &ret[0].x, &ret[0].y, &ret[0].z,
-		    &ret[1].x, &ret[1].y, &ret[1].z,
-		    &ret[2].x, &ret[2].y, &ret[2].z) != 9) {
+	axis = strsplit_num_tokens (mtx, ";", 3);
+	if (!axis) {
 		g_free (ret);
 		g_warning ("Failed to parse '%s' as a mount matrix", mtx);
 		return FALSE;
+	}
+
+	for (i = 0; i < G_N_ELEMENTS(id_matrix); i++) {
+		g_auto(GStrv) elems = NULL;
+
+		elems = strsplit_num_tokens (axis[i], ",", 3);
+		if (elems == NULL) {
+			g_free (ret);
+			g_warning ("Failed to parse '%s' as a mount matrix", mtx);
+			return FALSE;
+		}
+
+		ret[i].x = g_ascii_strtod (elems[0], NULL);
+		ret[i].y = g_ascii_strtod (elems[1], NULL);
+		ret[i].z = g_ascii_strtod (elems[2], NULL);
 	}
 
 	for (i = 0; i < G_N_ELEMENTS(id_matrix); i++) {
