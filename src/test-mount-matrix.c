@@ -12,6 +12,7 @@
 
 #define SWAP_Y_Z_MATRIX "1, 0, 0; 0, 0, 1; 0, 1, 0"
 #define INVALID_MATRIX "0, 1, 0; 1, 0, 0; 0, 0, 0"
+#define DEFAULT_MATRIX "1, 0, 0; 0, 1, 0; 0, 0, 1"
 
 static void
 print_vecs (AccelVec3 vecs[3])
@@ -62,12 +63,30 @@ test_mount_matrix (void)
 	g_test_assert_expected_messages ();
 }
 
+static void
+test_comma_decimal_separator (void)
+{
+	char *old_locale;
+	AccelVec3 *vecs;
+
+	old_locale = setlocale (LC_ALL, "fr_FR.UTF-8");
+	/* French locale not available? */
+	g_assert_nonnull (old_locale);
+
+	/* Default matrix */
+	g_assert_true (parse_mount_matrix (DEFAULT_MATRIX, &vecs));
+	g_free (vecs);
+
+	setlocale (LC_ALL, old_locale);
+}
+
 int main (int argc, char **argv)
 {
 	setlocale(LC_ALL, "");
 	g_test_init (&argc, &argv, NULL);
 
 	g_test_add_func ("/iio-sensor-proxy/mount-matrix", test_mount_matrix);
+	g_test_add_func ("/iio-sensor-proxy/comma-decimal-separator", test_comma_decimal_separator);
 
 	return g_test_run ();
 }
