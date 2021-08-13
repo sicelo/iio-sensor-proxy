@@ -9,6 +9,7 @@
 
 #include <glib.h>
 #include <stdlib.h>
+#include <locale.h>
 #include "orientation.h"
 #include "accel-mount-matrix.h"
 
@@ -207,6 +208,7 @@ print_orientation (const char *x_str,
 
 int main (int argc, char **argv)
 {
+	setlocale(LC_ALL, "");
 	g_test_init (&argc, &argv, NULL);
 
 	if (argc > 1) {

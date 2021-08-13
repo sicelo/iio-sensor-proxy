@@ -7,6 +7,7 @@
  *
  */
 
+#include <locale.h>
 #include "accel-attributes.h"
 
 #define VALID_DISPLAY_LOCATION "display"
@@ -60,6 +61,7 @@ test_accel_location (void)
 
 int main (int argc, char **argv)
 {
+	setlocale(LC_ALL, "");
 	g_test_init (&argc, &argv, NULL);
 
 	g_test_add_func ("/iio-sensor-proxy/accel-location", test_accel_location);

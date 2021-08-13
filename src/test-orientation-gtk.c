@@ -7,6 +7,7 @@
  *
  */
 
+#include <locale.h>
 #include <gtk/gtk.h>
 #include "orientation.h"
 
@@ -37,6 +38,7 @@ int main (int argc, char **argv)
 	GtkWidget *window;
 	GtkWidget *grid;
 
+	setlocale(LC_ALL, "");
 	gtk_init (&argc, &argv);
 
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);

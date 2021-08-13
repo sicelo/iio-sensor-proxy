@@ -7,6 +7,7 @@
  *
  */
 
+#include <locale.h>
 #include "accel-mount-matrix.h"
 
 #define SWAP_Y_Z_MATRIX "1, 0, 0; 0, 0, 1; 0, 1, 0"
@@ -63,6 +64,7 @@ test_mount_matrix (void)
 
 int main (int argc, char **argv)
 {
+	setlocale(LC_ALL, "");
 	g_test_init (&argc, &argv, NULL);
 
 	g_test_add_func ("/iio-sensor-proxy/mount-matrix", test_mount_matrix);
