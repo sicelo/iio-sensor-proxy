@@ -23,6 +23,7 @@ build_stable:
     - rm -f /etc/rpm/macros.image-language-conf
     - dnf update -y && dnf install -y $DEPENDENCIES
     - dnf reinstall -y glib2
+    - rpm -Uvh https://kojipkgs.fedoraproject.org//work/tasks/4390/73864390/libgudev-237-1.fc36.x86_64.rpm https://kojipkgs.fedoraproject.org//work/tasks/4390/73864390/libgudev-devel-237-1.fc36.x86_64.rpm
   script:
     - meson -Dgtk_doc=true -Dgtk-tests=true _build
     - ninja -v -C _build
