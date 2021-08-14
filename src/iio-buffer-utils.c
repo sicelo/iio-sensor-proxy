@@ -298,6 +298,8 @@ build_channel_array (const char        *device_dir,
 							current->generic_name);
 			if ((ret < 0) && (ret != -ENOENT))
 				goto error;
+			if (current->scale == 0.0)
+				goto error;
 
 			ret = iioutils_get_param_float (&current->offset,
 							"offset",
