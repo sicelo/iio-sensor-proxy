@@ -595,6 +595,36 @@ class Tests(dbusmock.DBusTestCase):
 
         self.stop_daemon()
 
+    def test_iio_scale_decimal_separator2(self):
+        '''scale decimal separator polling'''
+        accel = self.testbed.add_device('iio', 'iio-accel', None,
+            ['in_accel_x_raw', '0',
+             'in_accel_y_raw', '-256000000',
+             'in_accel_z_raw', '0',
+             'in_accel_scale', '0.000001',
+             'sampling_frequency', '5.2',
+             'name', 'IIO Test Accelerometer'],
+            ['NAME', '"IIO Accelerometer"',
+             'IIO_SENSOR_PROXY_TYPE', 'iio-poll-accel']
+        )
+        env = os.environ.copy()
+        env['LC_NUMERIC'] = 'fr_FR.UTF-8'
+        self.start_daemon(env=env)
+
+        self.proxy.ClaimAccelerometer()
+        self.assertEventually(lambda: self.have_text_in_log('Accel read from IIO on'))
+        # If the 2nd test fails, it's likely that fr_FR.UTF-8 locale isn't supported
+        self.assertEqual(self.have_text_in_log('scale 1,000000,1,000000,1,000000'), False)
+        self.assertEqual(self.have_text_in_log('scale 0,000001,0,000001,0,000001'), True)
+
+        self.assertEventually(lambda: self.get_dbus_property('AccelerometerOrientation') == 'normal')
+
+        self.testbed.set_attribute(accel, 'in_accel_x_raw', '-256000000')
+        self.testbed.set_attribute(accel, 'in_accel_y_raw', '0')
+        self.assertEventually(lambda: self.get_dbus_property('AccelerometerOrientation') == 'right-up')
+
+        self.stop_daemon()
+
     #
     # Helper methods
     #
