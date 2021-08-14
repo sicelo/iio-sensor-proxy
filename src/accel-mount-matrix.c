@@ -99,7 +99,11 @@ parse_mount_matrix (const char  *mtx,
 
 	/* Empty string means we use the identity matrix */
 	if (mtx == NULL || *mtx == '\0') {
+#if GLIB_CHECK_VERSION(2, 68, 0)
+		*vecs = g_memdup2 (id_matrix, sizeof(id_matrix));
+#else
 		*vecs = g_memdup (id_matrix, sizeof(id_matrix));
+#endif
 		return TRUE;
 	}
 
