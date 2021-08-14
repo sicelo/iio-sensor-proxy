@@ -155,8 +155,9 @@ iioutils_get_param_float (float      *output,
 			  const char *name,
 			  const char *generic_name)
 {
-	g_autoptr(FILE) sysfsfp = NULL;
 	char *builtname, *filename;
+	g_autofree char *contents = NULL;
+	g_autoptr(GError) error = NULL;
 	int ret = 0;
 
 	g_debug ("Trying to read '%s_%s' (name) from dir '%s'", name, param_name, device_dir);
@@ -165,16 +166,16 @@ iioutils_get_param_float (float      *output,
 	filename = g_build_filename (device_dir, builtname, NULL);
 	g_free (builtname);
 
-	sysfsfp = fopen (filename, "r");
-	if (sysfsfp) {
-		ret = fscanf (sysfsfp, "%f", output);
-		g_free (filename);
-		if (ret == 1)
+	if (g_file_get_contents (filename, &contents, NULL, &error)) {
+		*output = g_ascii_strtod (contents, NULL);
+		if (*output != 0.0)
 			return 0;
+		g_warning ("Couldn't convert '%s' to float", g_strchomp (contents));
+		g_clear_pointer (&contents, g_free);
+	} else {
+		g_debug ("Failed to read float from %s: %s", filename, error->message);
+		g_clear_error (&error);
 	}
-
-	ret = -errno;
-	g_debug ("Failed to read float from %s: %s", filename, g_strerror (-ret));
 	g_free (filename);
 
 	g_debug ("Trying to read '%s_%s' (generic name) from dir '%s'", generic_name, param_name, device_dir);
@@ -183,20 +184,21 @@ iioutils_get_param_float (float      *output,
 	filename = g_build_filename (device_dir, builtname, NULL);
 	g_free (builtname);
 
-	sysfsfp = fopen (filename, "r");
-	if (sysfsfp) {
-		if (fscanf (sysfsfp, "%f", output) != 1) {
+	if (g_file_get_contents (filename, &contents, NULL, &error)) {
+		*output = g_ascii_strtod (contents, NULL);
+		if (*output == 0.0) {
 			g_debug ("Failed to read float from %s", filename);
 			ret = -EINVAL;
 		}
 	} else {
-		ret = -errno;
-		if (ret != -ENOENT)
-			g_warning ("Failed to read float from %s: %s", filename, g_strerror (-ret));
-		else
-			g_debug ("Failed to read float from %s: %s", filename, g_strerror (-ret));
+		if (g_error_matches (error, G_FILE_ERROR, G_FILE_ERROR_NOENT)) {
+			ret = -ENOENT;
+			g_debug ("Failed to read float from %s: %s", filename, error->message);
+		} else {
+			ret = -EINVAL;
+			g_warning ("Failed to read float from %s: %s", filename, error->message);
+		}
 	}
-
 	g_free (filename);
 
 	return ret;
