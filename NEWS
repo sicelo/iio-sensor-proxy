@@ -1,3 +1,9 @@
+3.3
+---
+
+This update fixes a bug left-over in one of the 3.2 bug fixes where some
+accelerometers would fail to initialise.
+
 3.2
 ---
 
