@@ -167,10 +167,11 @@ iioutils_get_param_float (float      *output,
 	g_free (builtname);
 
 	if (g_file_get_contents (filename, &contents, NULL, &error)) {
-		*output = g_ascii_strtod (contents, NULL);
-		if (*output != 0.0)
+		char *endptr;
+		*output = g_ascii_strtod (contents, &endptr);
+		if (*output != 0.0 || endptr != contents)
 			return 0;
-		g_warning ("Couldn't convert '%s' to float", g_strchomp (contents));
+		g_warning ("Couldn't convert '%s' from %s to float", g_strchomp (contents), filename);
 		g_clear_pointer (&contents, g_free);
 	} else {
 		g_debug ("Failed to read float from %s: %s", filename, error->message);
@@ -185,15 +186,16 @@ iioutils_get_param_float (float      *output,
 	g_free (builtname);
 
 	if (g_file_get_contents (filename, &contents, NULL, &error)) {
-		*output = g_ascii_strtod (contents, NULL);
-		if (*output == 0.0) {
-			g_debug ("Failed to read float from %s", filename);
+		char *endptr;
+		*output = g_ascii_strtod (contents, &endptr);
+		if (*output == 0.0 && endptr == contents) {
+			g_warning ("Couldn't convert '%s' from %s to float", g_strchomp (contents), filename);
 			ret = -EINVAL;
 		}
 	} else {
 		if (g_error_matches (error, G_FILE_ERROR, G_FILE_ERROR_NOENT)) {
 			ret = -ENOENT;
-			g_debug ("Failed to read float from %s: %s", filename, error->message);
+			g_debug ("Failed to read float from non-existent %s", filename);
 		} else {
 			ret = -EINVAL;
 			g_warning ("Failed to read float from %s: %s", filename, error->message);
