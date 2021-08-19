@@ -7,6 +7,8 @@
  *
  */
 
+#include "config.h"
+
 #include <locale.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -960,8 +962,10 @@ int main (int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	if (verbose)
+	if (verbose) {
 		g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
+		g_debug ("Starting iio-sensor-proxy version "VERSION);
+	}
 
 	data = g_new0 (SensorData, 1);
 	data->previous_orientation = ORIENTATION_UNDEFINED;
