@@ -45,6 +45,8 @@ endif
 gio_dep = dependency('gio-2.0')
 gudev_dep = dependency('gudev-1.0', version: '>= 237')
 
+xmllint = find_program('xmllint', required: false)
+
 gnome = import('gnome')
 
 add_global_arguments('-D_GNU_SOURCE=1', language: 'c')
