@@ -108,6 +108,9 @@ class Tests(dbusmock.DBusTestCase):
         The testbed is initially empty.
         '''
         self.testbed = UMockdev.Testbed.new()
+        self.polkitd, obj_polkit = self.spawn_server_template(
+            'polkitd', {}, stdout=subprocess.PIPE)
+        obj_polkit.SetAllowed(['net.hadess.SensorProxy.claim-sensor'])
 
         self.proxy = None
         self.log = None
@@ -116,6 +119,14 @@ class Tests(dbusmock.DBusTestCase):
     def tearDown(self):
         del self.testbed
         self.stop_daemon()
+
+        if self.polkitd:
+            try:
+                self.polkitd.kill()
+            except OSError:
+                pass
+            self.polkitd.wait()
+        self.polkitd = None
 
         # on failures, print daemon log
         errors = [x[1] for x in self._outcome.errors if x[1]]
