@@ -19,6 +19,7 @@
 
 #include <gio/gio.h>
 #include <gudev/gudev.h>
+#include <polkit/polkit.h>
 #include "drivers.h"
 #include "orientation.h"
 
@@ -39,6 +40,8 @@ typedef struct {
 	GDBusConnection *connection;
 	guint name_id;
 	int ret;
+
+	PolkitAuthority *auth;
 
 	SensorDriver      *drivers[NUM_SENSOR_TYPES];
 	SensorDevice      *devices[NUM_SENSOR_TYPES];
@@ -428,6 +431,34 @@ client_vanished_cb (GDBusConnection *connection,
 	g_free (sender);
 }
 
+static gboolean
+check_claim_permission (SensorData   *data,
+			const char   *sender,
+			GError      **error)
+{
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(PolkitAuthorizationResult) result = NULL;
+	g_autoptr(PolkitSubject) subject = NULL;
+
+	subject = polkit_system_bus_name_new (sender);
+	result = polkit_authority_check_authorization_sync (data->auth,
+							    subject,
+							    "net.hadess.SensorProxy.claim-sensor",
+							    NULL,
+							    POLKIT_CHECK_AUTHORIZATION_FLAGS_NONE,
+							    NULL, &local_error);
+	if (result == NULL ||
+	    !polkit_authorization_result_get_is_authorized (result))
+	{
+		g_set_error (error, G_DBUS_ERROR,
+			     G_DBUS_ERROR_ACCESS_DENIED,
+			     "Not Authorized: %s", local_error ? local_error->message : "Sensor claim not allowed");
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
 static void
 handle_generic_method_call (SensorData            *data,
 			    const gchar           *sender,
@@ -489,6 +520,7 @@ handle_method_call (GDBusConnection       *connection,
 {
 	SensorData *data = user_data;
 	DriverType driver_type;
+	g_autoptr(GError) error = NULL;
 
 	if (g_strcmp0 (method_name, "ClaimAccelerometer") == 0 ||
 	    g_strcmp0 (method_name, "ReleaseAccelerometer") == 0)
@@ -505,6 +537,11 @@ handle_method_call (GDBusConnection       *connection,
 						       G_DBUS_ERROR_UNKNOWN_METHOD,
 						       "Method '%s' does not exist on object %s",
 						       method_name, object_path);
+		return;
+	}
+
+	if (!check_claim_permission (data, sender, &error)) {
+		g_dbus_method_invocation_return_gerror (invocation, error);
 		return;
 	}
 
@@ -863,6 +900,7 @@ free_sensor_data (SensorData *data)
 		g_clear_pointer (&data->clients[i], g_hash_table_unref);
 	}
 
+	g_clear_object (&data->auth);
 	g_clear_pointer (&data->introspection_data, g_dbus_node_info_unref);
 	g_clear_object (&data->connection);
 	g_clear_object (&data->client);
@@ -974,6 +1012,7 @@ int main (int argc, char **argv)
 	/* Set up D-Bus */
 	setup_dbus (data, replace);
 
+	data->auth = polkit_authority_get_sync (NULL, NULL);
 	data->loop = g_main_loop_new (NULL, TRUE);
 	g_main_loop_run (data->loop);
 	ret = data->ret;

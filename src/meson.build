@@ -5,7 +5,7 @@ config_h_files = configure_file(
   configuration: config_h
 )
 
-deps = [ gio_dep, gudev_dep, mathlib_dep ]
+deps = [ gio_dep, gudev_dep, mathlib_dep, polkit_gobject_dep ]
 
 resources = gnome.compile_resources(
     'iio-sensor-proxy-resources', 'iio-sensor-proxy.gresource.xml',

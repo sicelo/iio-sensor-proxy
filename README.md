@@ -12,7 +12,7 @@ Installation
 $ meson _build -Dprefix=/usr
 $ ninja -v -C _build install
 ```
-It requires libgudev and systemd (>= 233 for the accelerometer quirks).
+It requires libgudev, systemd (>= 233 for the accelerometer quirks) and polkit-gobject.
 
 Usage
 -----
@@ -106,7 +106,7 @@ correct that reading to match the expected orientation, whether:
    x_2 & y_2 & z_2\\
    x_3 & y_3 & z_3\\
   \end{array} } \right]
- = 
+ =
   \left[ {\begin{array}{ccc}
    corrected~x & corrected~y & corrected~z\\
   \end{array} } \right]
