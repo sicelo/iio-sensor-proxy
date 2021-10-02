@@ -93,7 +93,7 @@ poll_heading (gpointer user_data)
       readings.heading = atan2 (corrected_x, corrected_y) * 180 / G_PI;
     }
   else
-    readings.heading = atan2 (magn_x, magn_y) * 180 / PI;
+    readings.heading = atan2 (magn_x, magn_y) * 180 / G_PI;
 
   // Mount matrix?
 
