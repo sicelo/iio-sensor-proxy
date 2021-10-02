@@ -1,0 +1,33 @@
+diff --git a/data/net.hadess.SensorProxy.conf.in b/data/net.hadess.SensorProxy.conf.in
+index 0e7b1b5..fb70ab6 100644
+--- a/data/net.hadess.SensorProxy.conf.in
++++ b/data/net.hadess.SensorProxy.conf.in
+@@ -10,24 +10,16 @@
+     <allow own="net.hadess.SensorProxy"/>
+   </policy>
+ 
+-  <!-- Only Geoclue can access the compass -->
+-  <policy user="@geoclue_user@">
+-    <allow send_destination="net.hadess.SensorProxy" send_interface="net.hadess.SensorProxy.Compass" send_path="/net/hadess/SensorProxy/Compass"/>
+-    <allow send_destination="net.hadess.SensorProxy" send_interface="org.freedesktop.DBus.Introspectable" send_path="/net/hadess/SensorProxy/Compass"/>
+-    <allow send_destination="net.hadess.SensorProxy" send_interface="org.freedesktop.DBus.Properties" send_path="/net/hadess/SensorProxy/Compass"/>
+-    <allow send_destination="net.hadess.SensorProxy" send_interface="org.freedesktop.DBus.Peer" send_path="/net/hadess/SensorProxy/Compass"/>
+-  </policy>
+-
+   <!-- Anyone can talk to the main interface -->
+   <policy context="default">
+     <allow send_destination="net.hadess.SensorProxy" send_interface="net.hadess.SensorProxy"/>
+     <allow send_destination="net.hadess.SensorProxy" send_interface="org.freedesktop.DBus.Introspectable"/>
+     <allow send_destination="net.hadess.SensorProxy" send_interface="org.freedesktop.DBus.Properties"/>
+     <allow send_destination="net.hadess.SensorProxy" send_interface="org.freedesktop.DBus.Peer"/>
+-    <deny send_destination="net.hadess.SensorProxy" send_interface="org.freedesktop.DBus.Introspectable" send_path="/net/hadess/SensorProxy/Compass"/>
+-    <deny send_destination="net.hadess.SensorProxy" send_interface="org.freedesktop.DBus.Properties" send_path="/net/hadess/SensorProxy/Compass"/>
+-    <deny send_destination="net.hadess.SensorProxy" send_interface="org.freedesktop.DBus.Peer" send_path="/net/hadess/SensorProxy/Compass"/>
+-    <!-- <deny send_destination="net.hadess.SensorProxy" send_interface="net.hadess.SensorProxy.Compass"/> -->
++    <allow send_destination="net.hadess.SensorProxy" send_interface="net.hadess.SensorProxy.Compass" send_path="/net/hadess/SensorProxy/Compass"/>
++    <allow send_destination="net.hadess.SensorProxy" send_interface="org.freedesktop.DBus.Introspectable" send_path="/net/hadess/SensorProxy/Compass"/>
++    <allow send_destination="net.hadess.SensorProxy" send_interface="org.freedesktop.DBus.Properties" send_path="/net/hadess/SensorProxy/Compass"/>
++    <allow send_destination="net.hadess.SensorProxy" send_interface="org.freedesktop.DBus.Peer" send_path="/net/hadess/SensorProxy/Compass"/>
+   </policy>
+ 
+ </busconfig>
