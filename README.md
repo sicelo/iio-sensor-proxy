@@ -178,8 +178,8 @@ no good device-independent default.
 `PROXIMITY_NEAR_LEVEL` udev property. See [60-sensor.hwdb](https://github.com/systemd/systemd/blob/master/hwdb.d/60-sensor.hwdb)
 for details.
 
-For device-tree based devices, exporting the information through the kernel is still
-[a work in progress](https://lore.kernel.org/linux-iio/cover.1581947007.git.agx@sigxcpu.org/)
+For device-tree based devices, exporting the information through the kernel is done
+via the [near-level property](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/iio/common.yaml#n22).
 
 Known problems
 --------------
