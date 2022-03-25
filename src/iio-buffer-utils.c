@@ -92,27 +92,25 @@ iioutils_get_type (unsigned   *is_signed,
 		   const char *generic_name)
 {
 	int ret;
-	char *builtname;
-	char *filename;
+	g_autofree char *builtname = NULL;
+	g_autofree char *filename = NULL;
 	char signchar, endianchar;
 	unsigned padint;
 	g_autoptr(FILE) sysfsfp = NULL;
 
 	builtname = g_strdup_printf ("%s_type", name);
 	filename = g_build_filename (device_dir, "scan_elements", builtname, NULL);
-	g_free (builtname);
 
 	sysfsfp = fopen (filename, "r");
 	if (sysfsfp == NULL) {
+		g_clear_pointer (&builtname, g_free);
+		g_clear_pointer (&filename, g_free);
 		builtname = g_strdup_printf ("%s_type", generic_name);
 		filename = g_build_filename (device_dir, "scan_elements", builtname, NULL);
-		g_free (builtname);
 
 		sysfsfp = fopen (filename, "r");
-		if (sysfsfp == NULL) {
-			g_free (filename);
+		if (sysfsfp == NULL)
 			return FALSE;
-		}
 	}
 
 	/* See `iio_show_fixed_type()` in the IIO core for the format */
@@ -125,7 +123,6 @@ iioutils_get_type (unsigned   *is_signed,
 
 	if (ret < 0 || ret != 5) {
 		g_warning ("Failed to pass scan type description for %s", filename);
-		g_free (filename);
 		return FALSE;
 	}
 
@@ -139,8 +136,6 @@ iioutils_get_type (unsigned   *is_signed,
 
 	g_debug ("Got type for %s: is signed: %d, bytes: %d, bits_used: %d, shift: %d, mask: 0x%" G_GUINT64_FORMAT ", be: %d",
 		 name, *is_signed, *bytes, *bits_used, *shift, *mask, *be);
-
-	g_free (filename);
 
 	return TRUE;
 }
