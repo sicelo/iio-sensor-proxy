@@ -1001,7 +1001,10 @@ int main (int argc, char **argv)
 	}
 
 	if (verbose) {
-		g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
+		if (!g_setenv ("G_MESSAGES_DEBUG", "all", TRUE)) {
+			g_warning ("Failed to enable debug");
+			return EXIT_FAILURE;
+		}
 		g_debug ("Starting iio-sensor-proxy version "VERSION);
 	}
 
