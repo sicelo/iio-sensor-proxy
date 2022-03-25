@@ -400,38 +400,32 @@ _write_sysfs_string (const char *filename,
 		     const char *val,
 		     int         verify)
 {
-	int ret = 0;
 	g_autoptr(FILE) sysfsfp = NULL;
-	char *temp;
+	g_autofree char *temp = NULL;
 
 	temp = g_build_filename (basedir, filename, NULL);
 	sysfsfp = fopen (temp, "w");
 	if (sysfsfp == NULL) {
-		ret = -errno;
-		goto error_free;
+		return -errno;
 	}
 	fprintf(sysfsfp, "%s", val);
 	g_clear_pointer (&sysfsfp, fclose);
 
 	/* Verify? */
 	if (!verify)
-		goto error_free;
+		return 0;
 	sysfsfp = fopen(temp, "r");
 	if (sysfsfp == NULL) {
-		ret = -errno;
-		goto error_free;
+		return -errno;
 	}
 	if (fscanf(sysfsfp, "%s", temp) != 1 ||
 	    strcmp(temp, val) != 0) {
 		g_warning ("Possible failure in string write of %s Should be %s written to %s\\%s\n",
 			   temp, val, basedir, filename);
-		ret = -1;
+		return -1;
 	}
 
-error_free:
-	g_free(temp);
-
-	return ret;
+	return 0;
 }
 
 /**
