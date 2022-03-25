@@ -402,6 +402,7 @@ _write_sysfs_string (const char *filename,
 {
 	g_autoptr(FILE) sysfsfp = NULL;
 	g_autofree char *temp = NULL;
+	g_autofree char *contents = NULL;
 
 	temp = g_build_filename (basedir, filename, NULL);
 	sysfsfp = fopen (temp, "w");
@@ -409,19 +410,16 @@ _write_sysfs_string (const char *filename,
 		return -errno;
 	}
 	fprintf(sysfsfp, "%s", val);
-	g_clear_pointer (&sysfsfp, fclose);
 
 	/* Verify? */
 	if (!verify)
 		return 0;
-	sysfsfp = fopen(temp, "r");
-	if (sysfsfp == NULL) {
-		return -errno;
-	}
-	if (fscanf(sysfsfp, "%s", temp) != 1 ||
-	    strcmp(temp, val) != 0) {
-		g_warning ("Possible failure in string write of %s Should be %s written to %s\\%s\n",
-			   temp, val, basedir, filename);
+	g_clear_pointer (&sysfsfp, fclose);
+	if (!g_file_get_contents (temp, &contents, NULL, NULL) ||
+	    g_strcmp0 (contents, val) != 0) {
+		g_message ("WTA");
+		g_warning ("Possible failure in string write of '%s' Should be '%s' written to %s\n",
+			   contents ?: "(null)", val, temp);
 		return -1;
 	}
 
