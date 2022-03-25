@@ -763,7 +763,7 @@ accel_changed_func (SensorDevice *sensor_device,
 {
 	SensorData *data = user_data;
 	AccelReadings *readings = (AccelReadings *) readings_data;
-	OrientationUp orientation = data->previous_orientation;
+	OrientationUp orientation;
 
 	//FIXME handle errors
 	g_debug ("Accel sent by driver (quirk applied): %d, %d, %d (scale: %lf,%lf,%lf)",
