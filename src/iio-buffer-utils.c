@@ -738,6 +738,7 @@ buffer_drv_data_free (BufferDrvData *buffer_data)
 	for (i = 0; i < buffer_data->channels_count; i++)
 		channel_info_free (buffer_data->channels[i]);
 	g_free (buffer_data->channels);
+	g_free (buffer_data);
 }
 
 BufferDrvData *
