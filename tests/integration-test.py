@@ -154,12 +154,14 @@ class Tests(dbusmock.DBusTestCase):
         # have to do that ourselves
         env['UMOCKDEV_DIR'] = self.testbed.get_root_dir()
         self.log = tempfile.NamedTemporaryFile()
+        timeout_multiplier = 1
         if wrapper:
             daemon_path = wrapper + [ self.daemon_path ]
         else:
             daemon_path = [ self.daemon_path ]
         if os.getenv('VALGRIND') != None:
             daemon_path = ['valgrind'] + daemon_path + ['-v']
+            timeout_multiplier = 10
         else:
             daemon_path = daemon_path + ['-v']
 
@@ -168,7 +170,7 @@ class Tests(dbusmock.DBusTestCase):
                                        stderr=subprocess.STDOUT)
 
         # wait until the daemon gets online
-        timeout = 100
+        timeout = 100 * timeout_multiplier
         while timeout > 0:
             time.sleep(0.1)
             timeout -= 1
