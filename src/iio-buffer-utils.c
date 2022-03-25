@@ -55,7 +55,7 @@ struct iio_channel_info {
 static char *
 iioutils_break_up_name (const char *name)
 {
-	char **items, *ret;
+	g_auto(GStrv) items = NULL;
 	guint i;
 
 	items = g_strsplit (name, "_", -1);
@@ -66,10 +66,7 @@ iioutils_break_up_name (const char *name)
 		}
 	}
 
-	ret = g_strjoinv ("_", items);
-	g_strfreev (items);
-
-	return ret;
+	return g_strjoinv ("_", items);
 }
 
 /**
