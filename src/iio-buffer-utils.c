@@ -147,16 +147,15 @@ iioutils_get_param_float (float      *output,
 			  const char *name,
 			  const char *generic_name)
 {
-	char *builtname, *filename;
+	g_autofree char *builtname = NULL;
+	g_autofree char *filename = NULL;
 	g_autofree char *contents = NULL;
 	g_autoptr(GError) error = NULL;
-	int ret = 0;
 
 	g_debug ("Trying to read '%s_%s' (name) from dir '%s'", name, param_name, device_dir);
 
 	builtname = g_strdup_printf ("%s_%s", name, param_name);
 	filename = g_build_filename (device_dir, builtname, NULL);
-	g_free (builtname);
 
 	if (g_file_get_contents (filename, &contents, NULL, &error)) {
 		char *endptr;
@@ -164,38 +163,37 @@ iioutils_get_param_float (float      *output,
 		if (*output != 0.0 || endptr != contents)
 			return 0;
 		g_warning ("Couldn't convert '%s' from %s to float", g_strchomp (contents), filename);
-		g_clear_pointer (&contents, g_free);
 	} else {
 		g_debug ("Failed to read float from %s: %s", filename, error->message);
 		g_clear_error (&error);
 	}
-	g_free (filename);
 
 	g_debug ("Trying to read '%s_%s' (generic name) from dir '%s'", generic_name, param_name, device_dir);
 
+	g_clear_pointer (&builtname, g_free);
+	g_clear_pointer (&filename, g_free);
 	builtname = g_strdup_printf ("%s_%s", generic_name, param_name);
 	filename = g_build_filename (device_dir, builtname, NULL);
-	g_free (builtname);
 
+	g_clear_pointer (&contents, g_free);
 	if (g_file_get_contents (filename, &contents, NULL, &error)) {
 		char *endptr;
 		*output = g_ascii_strtod (contents, &endptr);
 		if (*output == 0.0 && endptr == contents) {
 			g_warning ("Couldn't convert '%s' from %s to float", g_strchomp (contents), filename);
-			ret = -EINVAL;
+			return -EINVAL;
 		}
 	} else {
 		if (g_error_matches (error, G_FILE_ERROR, G_FILE_ERROR_NOENT)) {
-			ret = -ENOENT;
 			g_debug ("Failed to read float from non-existent %s", filename);
+			return -ENOENT;
 		} else {
-			ret = -EINVAL;
 			g_warning ("Failed to read float from %s: %s", filename, error->message);
+			return -EINVAL;
 		}
 	}
-	g_free (filename);
 
-	return ret;
+	return 0;
 }
 
 static void
