@@ -244,22 +244,20 @@ build_channel_array (const char        *device_dir,
 	while ((name = g_dir_read_name (dp)) != NULL) {
 		if (g_str_has_suffix (name, "_en")) {
 			g_autoptr(FILE) sysfsfp = NULL;
-			char *filename, *index_name;
+			g_autofree char *filename = NULL;
+			g_autofree char *index_name = NULL;
 			g_autoptr(iio_channel_info) current = NULL;
 
 			filename = g_build_filename (scan_el_dir, name, NULL);
 			sysfsfp = fopen (filename, "r");
 			if (sysfsfp == NULL) {
 				g_debug ("Could not open scan_elements file '%s'", filename);
-				g_free (filename);
 				continue;
 			}
 			if (fscanf (sysfsfp, "%d", &ret) != 1) {
 				g_debug ("Could not read from scan_elements file '%s'", filename);
-				g_free (filename);
 				continue;
 			}
-			g_free (filename);
 			g_clear_pointer (&sysfsfp, fclose);
 
 			current = g_new0 (iio_channel_info, 1);
@@ -273,14 +271,13 @@ build_channel_array (const char        *device_dir,
 			}
 
 			index_name = g_strdup_printf ("%s_index", current->name);
+			g_clear_pointer (&filename, g_free);
 			filename = g_build_filename (scan_el_dir, index_name, NULL);
-			g_free (index_name);
 
 			sysfsfp = fopen (filename, "r");
 			if (sysfsfp == NULL)
 				goto error;
 			ret = fscanf (sysfsfp, "%u", &current->index);
-			g_free (filename);
 			if (ret != 1)
 				goto error;
 
