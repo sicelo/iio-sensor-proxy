@@ -93,8 +93,7 @@ setup_mount_matrix (GUdevDevice *device)
 	}
 
 	g_debug ("Failed to auto-detect mount matrix, falling back to identity");
-	parse_mount_matrix (NULL, &ret);
-	return ret;
+	return get_id_matrix ();
 }
 
 static char **
