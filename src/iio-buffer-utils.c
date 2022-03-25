@@ -213,6 +213,8 @@ compare_channel_index (gconstpointer a, gconstpointer b)
 	return (int) (info_1->index - info_2->index);
 }
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(iio_channel_info, channel_info_free)
+
 /* build_channel_array() - function to figure out what channels are present */
 static iio_channel_info **
 build_channel_array (const char        *device_dir,
@@ -243,7 +245,7 @@ build_channel_array (const char        *device_dir,
 		if (g_str_has_suffix (name, "_en")) {
 			g_autoptr(FILE) sysfsfp = NULL;
 			char *filename, *index_name;
-			iio_channel_info *current;
+			g_autoptr(iio_channel_info) current = NULL;
 
 			filename = g_build_filename (scan_el_dir, name, NULL);
 			sysfsfp = fopen (filename, "r");
@@ -315,7 +317,7 @@ build_channel_array (const char        *device_dir,
 				g_warning ("Could not parse name %s, generic name %s",
 					   current->name, current->generic_name);
 			} else {
-				g_ptr_array_add (array, current);
+				g_ptr_array_add (array, g_steal_pointer (&current));
 			}
 		}
 	}
