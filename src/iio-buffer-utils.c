@@ -416,7 +416,7 @@ _write_sysfs_string (const char *filename,
 		return 0;
 	g_clear_pointer (&sysfsfp, fclose);
 	if (!g_file_get_contents (temp, &contents, NULL, NULL) ||
-	    g_strcmp0 (contents, val) != 0) {
+	    g_strcmp0 (g_strchomp (contents), val) != 0) {
 		g_warning ("Possible failure in string write of '%s' Should be '%s' written to %s\n",
 			   contents ?: "(null)", val, temp);
 		return -1;
