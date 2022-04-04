@@ -21,32 +21,27 @@
 import os
 import sys
 import dbus
+import dbusmock
+import gi
 import tempfile
-import subprocess
 import psutil
+import subprocess
 import unittest
 import time
 
 try:
-    import gi
     from gi.repository import GLib
     from gi.repository import Gio
 except ImportError as e:
-    sys.stderr.write('Skipping tests, PyGobject not available for Python 3, or missing GI typelibs: %s\n' % str(e))
-    sys.exit(0)
+    sys.stderr.write('PyGobject not available for Python 3, or missing GI typelibs: %s\n' % str(e))
+    sys.exit(1)
 
 try:
     gi.require_version('UMockdev', '1.0')
     from gi.repository import UMockdev
 except ImportError:
-    sys.stderr.write('Skipping tests, umockdev not available (https://github.com/martinpitt/umockdev)\n')
-    sys.exit(0)
-
-try:
-    import dbusmock
-except ImportError:
-    sys.stderr.write('Skipping tests, python-dbusmock not available (http://pypi.python.org/pypi/python-dbusmock).\n')
-    sys.exit(0)
+    sys.stderr.write('umockdev not available (https://github.com/martinpitt/umockdev)\n')
+    sys.exit(1)
 
 
 SP = 'net.hadess.SensorProxy'

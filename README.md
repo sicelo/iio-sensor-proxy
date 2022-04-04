@@ -14,6 +14,10 @@ $ ninja -v -C _build install
 ```
 It requires libgudev, systemd (>= 233 for the accelerometer quirks) and polkit-gobject.
 
+Running the tests will require gobject-introspection support for Python,
+[python-dbusmock](https://github.com/martinpitt/python-dbusmock/),
+[umockdev](https://github.com/martinpitt/umockdev) and [psutil](https://github.com/giampaolo/psutil).
+
 Usage
 -----
 

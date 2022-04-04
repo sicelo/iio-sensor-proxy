@@ -66,4 +66,19 @@ if get_option('gtk_doc')
   subdir('docs')
 endif
 
-subdir('tests')
+if get_option('tests')
+  # Python 3 required modules
+  python3_required_modules = ['psutil', 'dbusmock', 'gi']
+
+  python = import('python')
+  python3 = python.find_installation('python3')
+  foreach p : python3_required_modules
+    # Source: https://docs.python.org/3/library/importlib.html#checking-if-a-module-can-be-imported
+    script = 'import importlib.util; import sys; exit(1) if importlib.util.find_spec(\''+ p +'\') is None else exit(0)'
+    if run_command(python3, '-c', script, check: false).returncode() != 0
+      error('Python3 module \'' + p + '\' required for running tests but not found')
+    endif
+  endforeach
+
+  subdir('tests')
+endif
