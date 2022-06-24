@@ -111,6 +111,14 @@ class Tests(dbusmock.DBusTestCase):
         self.log = None
         self.daemon = None
 
+    def run(self, result=None):
+        super(Tests, self).run(result)
+        if result and len(result.errors) + len(result.failures) > 0 and self.log:
+            with open(self.log.name) as f:
+                sys.stderr.write('\n-------------- daemon log: ----------------\n')
+                sys.stderr.write(f.read())
+                sys.stderr.write('------------------------------\n')
+
     def tearDown(self):
         del self.testbed
         self.stop_daemon()
@@ -122,14 +130,6 @@ class Tests(dbusmock.DBusTestCase):
                 pass
             self.polkitd.wait()
         self.polkitd = None
-
-        # on failures, print daemon log
-        errors = [x[1] for x in self._outcome.errors if x[1]]
-        if errors and self.log:
-            with open(self.log.name) as f:
-                sys.stderr.write('\n-------------- daemon log: ----------------\n')
-                sys.stderr.write(f.read())
-                sys.stderr.write('------------------------------\n')
 
     #
     # Daemon control and D-BUS I/O
