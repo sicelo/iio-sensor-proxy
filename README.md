@@ -156,6 +156,14 @@ one-line representation of the matrix above:
 x_1, y_1, z_1; x_2, y_2, z_2; x_3, y_3, z_3
 ```
 
+Accelerometer testing (without an accelerometer)
+------------------------------------------------
+
+If your hardware lacks an accelerometer, you can run the `fake-input-accelerometer` binary as root.
+This should create a new virtual device on the system, which can be interacted through `monitor-sensor`,
+`evtest`, or raw D-Bus. Use the printed keyboard commands to change the calculated orientation
+of that accelerometer.
+
 Compass testing
 ---------------
 
