@@ -72,6 +72,7 @@ static const SensorDriver * const drivers[] = {
 	&fake_compass,
 	&fake_light,
 	&iio_buffer_compass,
+	&iio_poll_compass_uncalibrated,
 	&iio_poll_proximity,
 };
 
