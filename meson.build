@@ -43,7 +43,7 @@ if get_option('gtk-tests')
     gtk_dep = dependency('gtk+-3.0', required: false)
 endif
 gio_dep = dependency('gio-2.0')
-gudev_dep = dependency('gudev-1.0', version: '>= 237')
+gudev_dep = dependency('gudev-1.0', version: '>= 234')
 polkit_gobject_dep = dependency('polkit-gobject-1', version: '>= 0.91')
 polkit_policy_directory = polkit_gobject_dep.get_pkgconfig_variable('policydir')
 
