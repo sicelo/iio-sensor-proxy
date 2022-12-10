@@ -1,3 +1,9 @@
+iio-sensor-proxy (3.4.2-1) unstable; urgency=medium
+
+  * depend on polkit-gobject-1
+
+ -- Carl Klemm <carl@uvos.xyz>  Sun, 10 Dec 2021 15:43:07 +0200
+
 iio-sensor-proxy (3.0.3-1) unstable; urgency=medium
 
   * Allow all users to use compasses
