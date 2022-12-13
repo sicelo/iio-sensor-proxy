@@ -1,4 +1,4 @@
-iio-sensor-proxy (3.4.2-1) unstable; urgency=medium
+iio-sensor-proxy (3.0.4-1) unstable; urgency=medium
 
   * depend on polkit-gobject-1
 
