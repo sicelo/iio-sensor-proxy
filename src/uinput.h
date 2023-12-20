@@ -589,6 +589,7 @@ extern "C" {
 #define SW_RADIO		SW_RFKILL_ALL	/* deprecated */
 #define SW_MICROPHONE_INSERT	0x04  /* set = inserted */
 #define SW_DOCK			0x05  /* set = plugged into dock */
+#define SW_FRONT_PROXIMITY	0x0b  /* set = front proximity sensor active */
 #define SW_MAX			0x0f
 #define SW_CNT			(SW_MAX+1)
 

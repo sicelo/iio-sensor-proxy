@@ -22,6 +22,7 @@ sources = [
   'drv-iio-buffer-compass.c',
   'drv-iio-poll-compass-uncalibrated.c',
   'drv-iio-poll-proximity.c',
+  'drv-input-proximity.c',
   'iio-buffer-utils.c',
   'accel-mount-matrix.c',
   'accel-scale.c',
