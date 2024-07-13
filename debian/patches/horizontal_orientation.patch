@@ -1,0 +1,96 @@
+diff --git a/src/orientation.c b/src/orientation.c
+index e80e9ad..318abdf 100644
+--- a/src/orientation.c
++++ b/src/orientation.c
+@@ -27,6 +27,8 @@ static const char *orientations[] = {
+         "bottom-up",
+         "left-up",
+         "right-up",
++        "face-up",
++        "face-down",
+         NULL
+ };
+ 
+@@ -55,6 +57,7 @@ string_to_orientation (const char *orientation)
+ 
+ #define THRESHOLD_LANDSCAPE  35
+ #define THRESHOLD_PORTRAIT  35
++#define THRESHOLD_HORIZONTAL  35
+ 
+ /* First apply scale to get m/s², then
+  * convert to 1G ~= 256 as the code expects */
+@@ -69,6 +72,7 @@ orientation_calc (OrientationUp prev,
+         int x, y, z;
+         int portrait_rotation;
+         int landscape_rotation;
++        int horizontal_rotation;
+ 
+         /* this code expects 1G ~= 256 */
+         x = SCALE(x);
+@@ -77,13 +81,26 @@ orientation_calc (OrientationUp prev,
+ 
+         portrait_rotation  = round(atan2(x, sqrt(y * y + z * z)) * RADIANS_TO_DEGREES);
+         landscape_rotation = round(atan2(y, sqrt(x * x + z * z)) * RADIANS_TO_DEGREES);
++        horizontal_rotation = round(atan2(z, sqrt(x * x + y * y)) * RADIANS_TO_DEGREES);
+ 
+         /* Don't change orientation if we are on the common border of two thresholds */
+         if (abs(portrait_rotation) > THRESHOLD_PORTRAIT && abs(landscape_rotation) > THRESHOLD_LANDSCAPE)
+                 return prev;
+ 
++        /* Check orientation along horizontal axis */
++        if (abs(portrait_rotation) < THRESHOLD_PORTRAIT && abs(landscape_rotation) < THRESHOLD_LANDSCAPE && abs(horizontal_rotation) > THRESHOLD_HORIZONTAL) {
++                ret = (horizontal_rotation > 0) ? ORIENTATION_FACE_UP : ORIENTATION_FACE_DOWN;
++
++                /* Some threshold to switching between direction faced */
++                if (prev == ORIENTATION_FACE_UP || prev == ORIENTATION_FACE_DOWN) {
++                        if (abs(horizontal_rotation) < SAME_AXIS_LIMIT) {
++                                ret = prev;
++                        }
++                }
++        }
++
+         /* Portrait check */
+-        if (abs(portrait_rotation) > THRESHOLD_PORTRAIT) {
++        else if (abs(portrait_rotation) > THRESHOLD_PORTRAIT) {
+                 ret = (portrait_rotation > 0) ? ORIENTATION_LEFT_UP : ORIENTATION_RIGHT_UP;
+ 
+                 /* Some threshold to switching between portrait modes */
+@@ -93,16 +110,14 @@ orientation_calc (OrientationUp prev,
+                         }
+                 }
+ 
+-        } else {
+-                /* Landscape check */
+-                if (abs(landscape_rotation) > THRESHOLD_LANDSCAPE) {
+-                        ret = (landscape_rotation > 0) ? ORIENTATION_BOTTOM_UP : ORIENTATION_NORMAL;
++        /* Landscape check */
++        } else if (abs(landscape_rotation) > THRESHOLD_LANDSCAPE) {
++                ret = (landscape_rotation > 0) ? ORIENTATION_BOTTOM_UP : ORIENTATION_NORMAL;
+ 
+-                        /* Some threshold to switching between landscape modes */
+-                        if (prev == ORIENTATION_BOTTOM_UP || prev == ORIENTATION_NORMAL) {
+-                                if (abs(landscape_rotation) < SAME_AXIS_LIMIT) {
+-                                        ret = prev;
+-                                }
++                /* Some threshold to switching between landscape modes */
++                if (prev == ORIENTATION_BOTTOM_UP || prev == ORIENTATION_NORMAL) {
++                        if (abs(landscape_rotation) < SAME_AXIS_LIMIT) {
++                                ret = prev;
+                         }
+                 }
+         }
+diff --git a/src/orientation.h b/src/orientation.h
+index de8758b..c8806de 100644
+--- a/src/orientation.h
++++ b/src/orientation.h
+@@ -21,7 +21,9 @@ typedef enum {
+         ORIENTATION_NORMAL,
+         ORIENTATION_BOTTOM_UP,
+         ORIENTATION_LEFT_UP,
+-        ORIENTATION_RIGHT_UP
++        ORIENTATION_RIGHT_UP,
++        ORIENTATION_FACE_UP,
++        ORIENTATION_FACE_DOWN
+ } OrientationUp;
+ 
+ #define ORIENTATION_UP_UP ORIENTATION_NORMAL

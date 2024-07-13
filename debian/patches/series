@@ -1,3 +1,4 @@
 meson_version.patch
 compass_permissions.patch
 monitor_sensor_compass.patch
+horizontal_orientation.patch
